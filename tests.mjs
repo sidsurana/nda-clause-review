@@ -1,0 +1,2 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {analyze,sample} from './engine.mjs';
+test('flags source-linked deviations and missing clauses',()=>{const r=analyze(sample);assert.equal(r.rows[0].status,'REVIEW');assert.match(r.rows[0].evidence,/L2/);assert.equal(r.rows[2].status,'PASS');assert.equal(analyze('hello').rows[0].status,'MISSING')});test('playbook threshold changes survival result',()=>assert.equal(analyze(sample,{threshold:8}).rows[0].status,'PASS'));test('empty input rejected',()=>assert.throws(()=>analyze('')));

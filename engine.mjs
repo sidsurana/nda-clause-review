@@ -1,0 +1,8 @@
+
+export const sample=`MUTUAL NON-DISCLOSURE AGREEMENT
+1. Confidentiality survives for 7 years after termination.
+2. Recipient may disclose confidential information to any third party.
+3. The agreement is governed by the laws of New York.
+4. Recipient shall return or destroy materials within 30 days.
+5. Residual knowledge may be used without restriction.`;
+export function analyze(text,options={}){if(!text.trim())throw Error('Add an NDA text before review.');const lines=text.split('\n'),max=Number(options.threshold||3);const rules=[{name:'Survival',pattern:/confidentiality.*?(\d+)\s*years/i,check:m=>+m[1]<=max,policy:`Maximum ${max} years`},{name:'Permitted disclosure',pattern:/.*disclos.*third party.*/i,check:m=>!/any third party/i.test(m[0]),policy:'Restrict disclosure to authorized recipients'},{name:'Governing law',pattern:/.*governed by.*/i,check:m=>/New York/i.test(m[0]),policy:'New York preferred'},{name:'Return or destruction',pattern:/.*return or destroy.*?(\d+)\s*days.*/i,check:m=>+m[1]<=30,policy:'Within 30 days'},{name:'Residuals',pattern:/.*residual.*/i,check:()=>false,policy:'Counsel review required for residuals'}];const rows=rules.map(r=>{let i=lines.findIndex(l=>r.pattern.test(l));let m=i<0?null:lines[i].match(r.pattern);return{title:r.name,status:!m?'MISSING':r.check(m)?'PASS':'REVIEW',evidence:m?`L${i+1}: ${lines[i]}`:'No matching clause found. Absence requires manual review.',detail:r.policy}});return{metrics:[['Clauses checked',rows.length],['Needs review',rows.filter(x=>x.status!=='PASS').length],['Source lines',lines.length]],rows,summary:'Draft review only. Rules and keyword matching can miss paraphrases and exceptions; counsel must verify every result.'}}

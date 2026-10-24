@@ -1,0 +1,2 @@
+import {attachFeature} from './ai-feature.mjs';
+attachFeature({task:"legora.review-nda.v1",title:"Legora \u00b7 live AI capability",getSource:()=>!document.querySelector('#source').value.trim()?'':JSON.stringify({playbook:{max_survival_years:Number(document.querySelector('#threshold').value),authorized_disclosure_only:true,governing_law:'New York',return_days:30},nda:document.querySelector('#source').value})});
